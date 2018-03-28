@@ -22,7 +22,7 @@ for file_path in data_files:
         if '__' not in i and 'readme' not in i:
             path_splits = file_path.split('\\')
 
-            new_file_directory = 'sEMG_Basic_Hand_movements_upatras_csv\\%s\\%s' % (path_splits[1], path_splits[2].split('.')[0])
+            new_file_directory = 'sEMG\\%s\\%s' % (path_splits[1], path_splits[2].split('.')[0])
             new_file_path = '%s\\%s.csv' % (new_file_directory, i)
 
             if not os.path.exists(new_file_directory):
