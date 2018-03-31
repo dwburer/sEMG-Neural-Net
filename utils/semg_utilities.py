@@ -6,7 +6,8 @@ import pandas as pd
 import numpy as np
 import os
 
-def read_data(data_path, split = "train"):
+
+def read_data(data_path, split_type="train"):
     """ Read data """
 
     # Fixed params
@@ -14,8 +15,17 @@ def read_data(data_path, split = "train"):
     n_channels = 2
     n_steps = 2500
 
+    train_days = [1, 2]
+    test_days = [3]
+
+    if split_type == 'train':
+        split = train_days
+    else:
+        split = test_days
+
     # hardcode for two types right now
     # first 100 are cyl, second 100 are hook
+    #
     # cyl = 1
     # hook = 2
     # lat = 3
@@ -24,15 +34,9 @@ def read_data(data_path, split = "train"):
     # tip = 6
     labels = np.concatenate(
         (
-            [[class_id for _ in range(100)] for class_id in range(1, n_class + 1)]
+            [[class_id for _ in range(100 * len(split))] for class_id in range(1, n_class + 1)]
         )
     )
-
-    # Read time-series data
-    # channel_files = os.listdir(path_signals)
-    # channel_files.sort()
-    # n_channels = len(channel_files)
-    # posix = len(split) + 5
 
     files = [
         'cyl_ch1.csv',
@@ -46,15 +50,25 @@ def read_data(data_path, split = "train"):
         'spher_ch1.csv',
         'spher_ch2.csv',
         'tip_ch1.csv',
-        'tip_ch2.csv',
+        'tip_ch2.csv'
     ]
-
-    channel_files = [data_path + filename for filename in files]
 
     # merge files of different grip types into one long file, per channel
     channels = []
     for num_channel in range(n_channels):
-        all_of_channel = [pd.read_csv(channel_files[file * (num_channel * n_channels)],  header=None) for file in range(int(len(channel_files) / n_channels))]
+
+        all_of_channel = []
+
+        for file in files[num_channel::n_channels]:
+
+            gesture_by_day = []
+
+            for day in split:
+                full_day_path = os.path.join(data_path, 'male_day_%d' % day)
+                full_file_path = os.path.join(full_day_path, file)
+                gesture_by_day.append(pd.read_csv(full_file_path,  header=None))
+
+            all_of_channel.append(pd.concat(gesture_by_day))
 
         channels.append(
             (pd.concat(all_of_channel), 'channel_%d' % num_channel)
@@ -72,8 +86,9 @@ def read_data(data_path, split = "train"):
         # iterate
         i_ch += 1
 
-    # Return 
+    # Return
     return X, labels, list_of_channels
+
 
 def standardize(train, test):
     """ Standardize data """
@@ -84,6 +99,7 @@ def standardize(train, test):
 
     return X_train, X_test
 
+
 def one_hot(labels, n_class = 6):
     """ One-hot encoding """
     expansion = np.eye(n_class)
@@ -91,6 +107,7 @@ def one_hot(labels, n_class = 6):
     assert y.shape[1] == n_class, "Wrong number of labels!"
 
     return y
+
 
 def get_batches(X, y, batch_size = 100):
     """ Return a generator for batches """
@@ -100,7 +117,3 @@ def get_batches(X, y, batch_size = 100):
     # Loop over batches and yield
     for b in range(0, len(X), batch_size):
         yield X[b:b+batch_size], y[b:b+batch_size]
-    
-
-
-
