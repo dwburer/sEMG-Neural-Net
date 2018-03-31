@@ -86,8 +86,24 @@ def read_data(data_path, split_type="train"):
         # iterate
         i_ch += 1
 
-    # Return
-    return X, labels, list_of_channels
+    if(True):
+        shuff_labels = np.zeros((len(labels), 1, n_channels))
+        shuff_labels[:, 0, 0] = labels
+        shuff_labels[:, 0, 1] = labels
+
+        new_data = np.concatenate([shuff_labels, X], axis=1)
+
+        np.reshape(new_data, (n_steps + 1, len(labels), n_channels))
+        np.random.shuffle(new_data)
+        np.reshape(new_data, (len(labels), n_steps + 1, n_channels))
+
+        final_data = new_data[:, 1:, :]
+        final_labels = np.array(new_data[:, 0, 0])
+
+        # Return
+        return final_data, final_labels.astype(int), list_of_channels
+    else:
+        return X, labels, list_of_channels
 
 
 def standardize(train, test):
