@@ -13,7 +13,7 @@ def read_data(data_path, split_type="train"):
     # Fixed params
     n_class = 6
     n_channels = 2
-    n_steps = 2500
+    n_steps = 2496
 
     train_days = [1, 2]
     test_days = [3]
@@ -66,7 +66,7 @@ def read_data(data_path, split_type="train"):
             for day in split:
                 full_day_path = os.path.join(data_path, 'male_day_%d' % day)
                 full_file_path = os.path.join(full_day_path, file)
-                gesture_by_day.append(pd.read_csv(full_file_path,  header=None))
+                gesture_by_day.append(pd.read_csv(full_file_path,  header=None).drop(columns=[2496, 2497, 2498, 2499]))
 
             all_of_channel.append(pd.concat(gesture_by_day))
 
