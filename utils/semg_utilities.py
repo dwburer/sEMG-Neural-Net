@@ -98,10 +98,10 @@ def read_data(data_path, split_type="train"):
         np.reshape(new_data, (len(labels), n_steps + 1, n_channels))
 
         final_data = new_data[:, 1:, :]
-        final_labels = np.array(new_data[:, 0, 0])
+        final_labels = np.array(new_data[:, 0, 0]).astype(int)
 
-        # Return
-        return final_data, final_labels.astype(int), list_of_channels
+        # Return (train, test)
+        return final_data[int(len(final_labels) / 2):, :, :], final_labels[int(len(final_labels) / 2):], list_of_channels, final_data[:int(len(final_labels) / 2), :, :], final_labels[:int(len(final_labels) / 2)], list_of_channels
     else:
         return X, labels, list_of_channels
 
