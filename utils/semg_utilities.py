@@ -7,7 +7,7 @@ import numpy as np
 import os
 
 
-def read_data(data_path, split_type="train"):
+def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     """ Read data """
 
     # Fixed params
@@ -15,8 +15,8 @@ def read_data(data_path, split_type="train"):
     n_channels = 2
     n_steps = 2496
 
-    train_days = [1, 2, 3]
-    test_days = [3, 2, 1]
+    train_days = [1]
+    test_days = [3]
 
     if split_type == 'train':
         split = train_days
@@ -101,7 +101,11 @@ def read_data(data_path, split_type="train"):
         final_labels = np.array(new_data[:, 0, 0]).astype(int)
 
         # Return (train, test)
-        return final_data[int(len(final_labels) / 2):, :, :], final_labels[int(len(final_labels) / 2):], list_of_channels, final_data[:int(len(final_labels) / 2), :, :], final_labels[:int(len(final_labels) / 2)], list_of_channels
+        if sub_split:
+            return final_data[int(len(final_labels) / 2):, :, :], final_labels[int(len(final_labels) / 2):], list_of_channels, final_data[:int(len(final_labels) / 2), :, :], final_labels[:int(len(final_labels) / 2)], list_of_channels
+        else:
+            return final_data, final_labels, list_of_channels
+
     else:
         return X, labels, list_of_channels
 
