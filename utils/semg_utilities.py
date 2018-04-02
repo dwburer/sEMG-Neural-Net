@@ -86,7 +86,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
         # iterate
         i_ch += 1
 
-    if(shuffle):
+    if shuffle:
         shuff_labels = np.zeros((len(labels), 1, n_channels))
         shuff_labels[:, 0, 0] = labels
         shuff_labels[:, 0, 1] = labels
